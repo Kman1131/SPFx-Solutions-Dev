@@ -13,7 +13,7 @@ export interface ICommentState {
   commentValue : string;
 }
 export default class ListItemComments extends React.Component<IListItemCommentsProps, ICommentState> {
-
+  private submitCommentBtn: any;
   public spHttpClient: SPHttpClient;
   private wpF : any;
   private cols : number;
@@ -54,20 +54,12 @@ let local : any;
 let stillUtc : any;
 let cols = 80;
 let rows = 20;
+this.submitCommentBtn = <form onSubmit={this.handleSubmit}><label><div>Add a new comment</div><textarea className={ styles.commentbox } name="text" value={this.state.commentValue} onChange={this.handleChange} rows={this.rows} cols={this.cols}></textarea></label><input className={ styles.button } type="submit" value="Add Comment" /></form>;
     return (
 
       <div className={ styles.listItemComments }>
-      <form onSubmit={this.handleSubmit}>
-        <label>
-         <div>Add a new comment</div>
-         <textarea className={ styles.commentbox } name="text" value={this.state.commentValue} onChange={this.handleChange} rows={this.rows} cols={this.cols}>
 
-   </textarea>
-
-        </label>
-        <input className={ styles.button } type="submit" value="Add Comment" />
-      </form>
-
+{this.submitCommentBtn}
         <div className={ styles.container }>
         <ul className={ styles.list }>
         { this.props.spListItems &&
