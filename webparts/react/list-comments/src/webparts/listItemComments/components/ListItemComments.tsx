@@ -13,6 +13,7 @@ export interface ICommentState {
   commentValue : string;
 }
 export default class ListItemComments extends React.Component<IListItemCommentsProps, ICommentState> {
+  private listItemsRender: any;
   private submitCommentBtn: any;
   public spHttpClient: SPHttpClient;
   private wpF : any;
@@ -51,39 +52,45 @@ let condition : any;
 let timeconverted : any;
 let date : any;
 let local : any;
-let stillUtc : any;
+let Utc : any;
 let cols = 80;
 let rows = 20;
-this.submitCommentBtn = <form onSubmit={this.handleSubmit}><label><div>Add a new comment</div><textarea className={ styles.commentbox } name="text" value={this.state.commentValue} onChange={this.handleChange} rows={this.rows} cols={this.cols}></textarea></label><input className={ styles.button } type="submit" value="Add Comment" /></form>;
-    return (
+this.submitCommentBtn =
+<form onSubmit={this.handleSubmit}>
+<label>
+  <div>Add a new comment</div>
+  <textarea className={ styles.commentbox } name="text" value={this.state.commentValue} onChange={this.handleChange} rows={this.rows} cols={this.cols}></textarea>
+  </label>
+  <input className={ styles.button } type="submit" value="Add Comment" />
+  </form>;
+this.listItemsRender =  this.props.spListItems &&
+  this.props.spListItems.map((list, index) => (
+    editor = JSON.stringify(list.Editor),
+    commentAuthor = editor.split('"')[5],
+    date = moment.utc(list.Modified).format('YYYY-MM-DD HH:mm:ss'),
+    Utc = moment.utc(date).toDate(),
+    local = moment(Utc).local().format('YYYY-MM-DD HH:mm:ss'),
+    year = local.substring(0, 4),
+    month = local.split('-')[1],
+    time = local.substring(11,list.Modified.length-4),
+    day = local.substring(8, 10),
+    hour = time.substring(0,time.length-6),
+    minutes = list.Modified.split(':')[1],
+    condition = list.V3Comments,
+<li key={list.V3Comments} className={ styles.item }>
+    <p className={ styles.paragraph }>{list.V3Comments}</p> <div className={ styles.author }>{commentAuthor + " - " + day + "/" + month + "/" + year + " at " + time}</div>
+    </li>
+)
+);
+
+return (
 
       <div className={ styles.listItemComments }>
 
 {this.submitCommentBtn}
         <div className={ styles.container }>
         <ul className={ styles.list }>
-        { this.props.spListItems &&
-          this.props.spListItems.map((list, index) => (
-            editor = JSON.stringify(list.Editor),
-            commentAuthor = editor.split('"')[5],
-            date = moment.utc(list.Modified).format('YYYY-MM-DD HH:mm:ss'),
-            stillUtc = moment.utc(date).toDate(),
-            local = moment(stillUtc).local().format('YYYY-MM-DD HH:mm:ss'),
-            year = local.substring(0, 4),
-            month = local.split('-')[1],
-            time = local.substring(11,list.Modified.length-4),
-            day = local.substring(8, 10),
-            hour = time.substring(0,time.length-6),
-            minutes = list.Modified.split(':')[1],
-            condition = list.V3Comments,
-            console.log(local),
-
-            <li key={list.ID} className={ styles.item }>
-            <p className={ styles.paragraph }>{list.V3Comments}</p> <div className={ styles.author }>{commentAuthor + " - " + day + "/" + month + "/" + year + " at " + time}</div>
-            </li>
-        )
-        )
-        }
+{this.listItemsRender}
       </ul>
       </div>
 
